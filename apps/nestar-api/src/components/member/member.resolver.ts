@@ -1,26 +1,38 @@
 import { Mutation, Resolver, Query, Args } from '@nestjs/graphql';
 import { MemberService } from './member.service';
-import { UsePipes, ValidationPipe } from '@nestjs/common';
+import { InternalServerErrorException, UsePipes, ValidationPipe } from '@nestjs/common';
 import { LoginInput, MemberInput } from '../../libs/dto/member/member.input';
+import { Member } from '../../libs/dto/member/member';
 
 @Resolver()
 export class MemberResolver {
 	constructor(private readonly memberService: MemberService) {}
 
 	/** --------------------------- signup --------------------------- **/
-	@Mutation(() => String) // @Mutation(POST)
+	@Mutation(() => Member) // @Mutation(POST)
 	@UsePipes(ValidationPipe)
-	public async signup(@Args('input') input: MemberInput): Promise<string> {
-		console.log('Mutation: signup');
-		console.log('input:', input);
-		return this.memberService.signup();
+	public async signup(@Args('input') input: MemberInput): Promise<Member> {
+		try {
+			console.log('Mutation: signup');
+			console.log('input:', input);
+			return this.memberService.signup(input);
+		} catch (err) {
+			console.log('Error, signup:', err);
+			throw new InternalServerErrorException(err);
+		}
 	}
 
 	/** --------------------------- login --------------------------- **/
 	@Mutation(() => String) // @Mutation(POST)
+	@UsePipes(ValidationPipe)
 	public async login(@Args('input') input: LoginInput): Promise<string> {
-		console.log('Mutation: login');
-		return this.memberService.login();
+		try {
+			console.log('Mutation: login');
+			return this.memberService.login();
+		} catch (err) {
+			console.log('Error, signup:', err);
+			throw new InternalServerErrorException(err);
+		}
 	}
 
 	/** --------------------------- updateMember --------------------------- **/
