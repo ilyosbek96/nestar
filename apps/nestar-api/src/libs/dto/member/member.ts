@@ -34,10 +34,10 @@ export class Member {
 	memberAddress?: string;
 
 	@Field(() => String, { nullable: true })
-	MemberDesc?: string;
+	memberDesc?: string;
 
 	@Field(() => Int)
-	MemberProperties: number;
+	memberProperties: number;
 
 	@Field(() => Int)
 	memberArticles: number;
