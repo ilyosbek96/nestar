@@ -44,6 +44,7 @@ export class LoginInput {
 
 @InputType()
 class AISearch {
+	// doim optional
 	@IsOptional()
 	@Field(() => String, { nullable: true })
 	text?: string;
@@ -77,6 +78,8 @@ export class AgentsInquiry {
 
 @InputType()
 class MISearch {
+	// doim optional
+
 	@IsOptional()
 	@Field(() => MemberStatus, { nullable: true })
 	memberStatus?: MemberStatus;
