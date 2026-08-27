@@ -39,7 +39,7 @@ export class MemberResolver {
 	// Authentication
 
 	@UseGuards(AuthGuard)
-	@Query(() => String) // @Mutation(POST)
+	@Query(() => String) // @Query(GET)
 	public async checkAuth(@AuthMember('memberNick') memberNick: string): Promise<string> {
 		console.log('Query: checkAuth');
 		console.log('memberNick:', memberNick);
