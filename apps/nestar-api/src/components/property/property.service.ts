@@ -10,7 +10,7 @@ import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
 import { StatisticModifier, T } from '../../libs/types/common';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
-import * as moment from 'moment';
+import moment = require('moment');
 import { lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 
 @Injectable()
