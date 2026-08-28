@@ -5,6 +5,7 @@ import { ObjectId } from 'mongoose';
 import { avialableObtions, avialablePropertySorts } from '../../config';
 import { Direction } from '../../enums/common.enum';
 
+/** ======================= PropertyInput ======================= **/
 @InputType()
 export class PropertyInput {
 	@IsNotEmpty()
@@ -69,6 +70,7 @@ export class PropertyInput {
 	constructedAt?: Date;
 }
 
+/** ======================= PricesRange ======================= **/
 @InputType()
 export class PricesRange {
 	@Field(() => Int)
@@ -78,6 +80,7 @@ export class PricesRange {
 	end: number;
 }
 
+/** ======================= SquaresRange ======================= **/
 @InputType()
 export class SquaresRange {
 	@Field(() => Int)
@@ -87,6 +90,7 @@ export class SquaresRange {
 	end: number;
 }
 
+/** ======================= PeriodsRange ======================= **/
 @InputType()
 export class PeriodsRange {
 	@Field(() => Date)
@@ -96,6 +100,7 @@ export class PeriodsRange {
 	end: Date;
 }
 
+/** ======================= PiSearch ======================= **/
 @InputType()
 class PiSearch {
 	@IsOptional()
@@ -140,6 +145,7 @@ class PiSearch {
 	text?: string;
 }
 
+/** ======================= PropertiesInquiry ======================= **/
 @InputType()
 export class PropertiesInquiry {
 	@IsNotEmpty()
@@ -166,6 +172,7 @@ export class PropertiesInquiry {
 	search: PiSearch;
 }
 
+/** ======================= APISearch ======================= **/
 @InputType()
 class APISearch {
 	@IsOptional()
@@ -173,6 +180,7 @@ class APISearch {
 	propertyStatus?: PropertyStatus;
 }
 
+/** ======================= AgentPropertiesInquiry ======================= **/
 @InputType()
 export class AgentPropertiesInquiry {
 	@IsNotEmpty()
@@ -197,4 +205,43 @@ export class AgentPropertiesInquiry {
 	@IsNotEmpty()
 	@Field(() => APISearch)
 	search: APISearch;
+}
+
+/** ======================= ALPISearch ======================= **/
+@InputType()
+class ALPISearch {
+	@IsOptional()
+	@Field(() => PropertyStatus, { nullable: true })
+	propertyStatus?: PropertyStatus;
+
+	@IsOptional()
+	@Field(() => [PropertyLocation], { nullable: true })
+	propertyLocationList?: PropertyLocation[];
+}
+
+/** ======================= AllPropertiesInquiry ======================= **/
+@InputType()
+export class AllPropertiesInquiry {
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	page: number;
+
+	@IsNotEmpty()
+	@Min(1)
+	@Field(() => Int)
+	limit: number;
+
+	@IsOptional()
+	@IsIn(avialablePropertySorts)
+	@Field(() => String, { nullable: true })
+	sort?: string;
+
+	@IsOptional()
+	@Field(() => Direction, { nullable: true })
+	direction?: Direction;
+
+	@IsNotEmpty()
+	@Field(() => ALPISearch)
+	search: ALPISearch;
 }
