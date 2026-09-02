@@ -112,7 +112,7 @@ export class CommentService {
 
 	/** ADMIN */
 
-	/** --------------------------- removeCommentByAdmin --------------------------- **/
+	/** --------------------------- removeCommentByAdmin ---------------------------+ **/
 	public async removeCommentByAdmin(input: ObjectId): Promise<Comment> {
 		const result = await this.commentModel.findByIdAndDelete(input).exec();
 		if (!result) throw new InternalServerErrorException(Message.REMOVE_FAILED);
