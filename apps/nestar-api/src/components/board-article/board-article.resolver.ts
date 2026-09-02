@@ -67,9 +67,7 @@ export class BoardArticleResolver {
 		return await this.boardArticleService.getBoardArticles(memberId, input);
 	}
 
-	/** ADMIN */
-
-	/** ADMIN **/
+	/** <<<<<<<<<<<<<<<<<<<<<<<<< ADMIN >>>>>>>>>>>>>>>>> **/
 
 	/** --------------------------- getAllBoardArticlesByAdmin --------------------------- **/
 	@Roles(MemberType.ADMIN)
