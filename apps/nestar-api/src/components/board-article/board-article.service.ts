@@ -198,7 +198,7 @@ export class BoardArticleService {
 	}
 
 	/** --------------------------- boardArticleStatsEditor --------------------------- **/
-	public async boardArticleStatsEditor(input: StatisticModifier): Promise<BoardArticle | null> {
+	public async boardArticleStatsEditor(input: StatisticModifier): Promise<BoardArticle> {
 		const { _id, targetKey, modifier } = input;
 		return await this.boardArticleModel
 			.findByIdAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true })
