@@ -71,7 +71,10 @@ export class MemberResolver {
 	/** --------------------------- getMember --------------------------- **/
 	@UseGuards(WithoutGuard)
 	@Query(() => Member) // @Query (GET)
-	public async getMember(@Args('memberId') input: string, @AuthMember('_id') memberId: ObjectId): Promise<Member> {
+	public async getMember(
+		@Args('memberId') input: string, //
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Member> {
 		console.log('Query: getMember');
 
 		const targetId = shapeIntoMongoObjectId(input);
@@ -81,7 +84,10 @@ export class MemberResolver {
 	/** --------------------------- getAgents --------------------------- **/
 	@UseGuards(WithoutGuard)
 	@Query(() => Members) // @Query (GET)
-	public async getAgents(@Args('input') input: AgentsInquiry, @AuthMember('_id') memberId: ObjectId): Promise<Members> {
+	public async getAgents(
+		@Args('input') input: AgentsInquiry, //
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Members> {
 		console.log('Query: getAgents');
 		return await this.memberService.getAgents(memberId, input);
 	}
@@ -99,7 +105,7 @@ export class MemberResolver {
 	}
 
 	/** --------------------------- getAllMembersByAdmin --------------------------- **/
-	/** =============== ADMIN ============= **/
+	/** ++++++++++++++++++++++++++++++ ADMIN ++++++++++++++++++++++++++++++ **/
 	// Authorization: ADMIN
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
@@ -119,7 +125,8 @@ export class MemberResolver {
 		return await this.memberService.updateMemberByADmin(input);
 	}
 
-	/** UPLOAD **/
+	/** ******************************** UPLOAD ***************************** **/
+	/** +++++++++++++++++++++++++ imageUploader +++++++++++++++++ **/
 	@UseGuards(AuthGuard)
 	@Mutation((returns) => String)
 	public async imageUploader(
@@ -147,7 +154,7 @@ export class MemberResolver {
 
 		return url;
 	}
-
+	/** +++++++++++++++++++++++++ imagesUploader +++++++++++++++++ **/
 	@UseGuards(AuthGuard)
 	@Mutation((returns) => [String])
 	public async imagesUploader(
