@@ -16,6 +16,7 @@ import { ObjectId } from 'mongoose';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
+import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Resolver()
 export class PropertyResolver {
@@ -79,6 +80,18 @@ export class PropertyResolver {
 	): Promise<Properties> {
 		console.log('Quer: getAgentProperties');
 		return await this.propertyService.getAgentProperties(memberId, input);
+	}
+
+	/** +++++++++++++++++++++++ LIKE +++++++++++++++++++ **/
+	@UseGuards(AuthGuard)
+	@Mutation(() => Property)
+	public async likeTargetProperty(
+		@Args('propertyId') input: string,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Property> {
+		console.log('Mutation: likeTargetProperty ');
+		const likeRefId = shapeIntoMongoObjectId(input);
+		return await this.propertyService.likeTargetProperty(memberId, likeRefId);
 	}
 
 	/** ++++++++++++++++++++++> ADMIN <++++++++++++++++++++++   **/
