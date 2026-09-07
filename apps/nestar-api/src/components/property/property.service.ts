@@ -92,7 +92,7 @@ export class PropertyService {
 		return result;
 	}
 
-	/**=========================== getProperties =============================== **/
+	/**========================== getProperties =============================== **/
 	public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promise<Properties> {
 		const match: T = { propertyStatus: PropertyStatus.ACTIVE };
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
