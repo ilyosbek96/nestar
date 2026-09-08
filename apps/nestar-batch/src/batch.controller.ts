@@ -24,7 +24,7 @@ export class BatchController {
 		}
 	}
 
-	/**----------------------- batchProperties ----------------------- */
+	/**-----------------------. batchProperties ----------------------- */
 	@Cron('20 * * * * *', { name: BATCH_TOP_PROPERTIES })
 	public async batchProperties() {
 		try {
