@@ -5,7 +5,6 @@ import { ObjectId } from 'mongoose';
 import { avialableObtions, avialablePropertySorts } from '../../config';
 import { Direction } from '../../enums/common.enum';
 
-/** ======================= PropertyInput ======================= **/
 @InputType()
 export class PropertyInput {
 	@IsNotEmpty()
@@ -207,6 +206,7 @@ export class AgentPropertiesInquiry {
 	search: APISearch;
 }
 
+
 /** ======================= ALPISearch ======================= **/
 @InputType()
 class ALPISearch {
@@ -246,6 +246,7 @@ export class AllPropertiesInquiry {
 	search: ALPISearch;
 }
 
+
 @InputType()
 export class OrdinaryInquiry {
 	@IsNotEmpty()
@@ -257,4 +258,9 @@ export class OrdinaryInquiry {
 	@Min(1)
 	@Field(() => Int)
 	limit: number;
+
 }
+
+
+
+

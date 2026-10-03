@@ -63,6 +63,8 @@ export class AgentsInquiry {
 	limit: number;
 
 	@IsOptional()
+	// ✅ TUZATILDI: avval @IsIn([availableAgentSorts]) edi (massiv ichida massiv).
+	// Endi massivning o'zi beriladi, shuning uchun 'memberRank' kabi qiymatlar tekshiruvdan o'tadi.
 	@IsIn(availableAgentSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
@@ -106,7 +108,9 @@ export class MembersInquiry {
 	limit: number;
 
 	@IsOptional()
-	@IsIn([availableMemberSorts])
+	// ✅ TUZATILDI: avval @IsIn([availableMemberSorts]) edi (massiv ichida massiv).
+	// Endi massivning o'zi beriladi.
+	@IsIn(availableMemberSorts)
 	@Field(() => String, { nullable: true })
 	sort?: string;
 

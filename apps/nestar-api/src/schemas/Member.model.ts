@@ -94,6 +94,6 @@ const MemberSchema = new Schema(
 			type: Date,
 		},
 	},
-	{ timestamps: true, collection: 'members' },
+	{ timestamps: true, collation: { locale: 'en', strength: 2 } },
 );
 export default MemberSchema;

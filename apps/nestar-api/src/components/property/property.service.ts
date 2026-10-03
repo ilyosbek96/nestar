@@ -1,26 +1,23 @@
 import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
-import { Properties, Property } from '../../libs/dto/property/property';
-import {
-	AgentPropertiesInquiry,
-	AllPropertiesInquiry,
-	OrdinaryInquiry,
-	PropertiesInquiry,
-	PropertyInput,
-} from '../../libs/dto/property/property.input';
+import { Model, ObjectId, Schema, Types } from 'mongoose';
+
 import { Direction, Message } from '../../libs/enums/common.enum';
 import { MemberService } from '../member/member.service';
 import { PropertyStatus } from '../../libs/enums/property.enum';
 import { ViewGroup } from '../../libs/enums/view.enum';
 import { ViewService } from '../view/view.service';
 import { StatisticModifier, T } from '../../libs/types/common';
+import { AgentPropertiesInquiry, AllPropertiesInquiry, OrdinaryInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
+import { Properties, Property } from '../../libs/dto/property/property';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import moment = require('moment');
 import { lookupAuthMemberLiked, lookupMember, shapeIntoMongoObjectId } from '../../libs/config';
 import { LikeService } from '../like/like.service';
 import { LikeGroup } from '../../libs/enums/like.enum';
 import { LikeInput } from '../../libs/dto/like/like.input';
+
+
 
 @Injectable()
 export class PropertyService {
@@ -31,12 +28,16 @@ export class PropertyService {
 		private likeService: LikeService,
 	) {}
 
-	/**=========================== createProperty =============================== **/
+    /**=========================== createProperty =============================== **/
 	public async createProperty(input: PropertyInput): Promise<Property> {
 		try {
 			const result = await this.propertyModel.create(input);
 			// increase memberProperties +1
-			await this.memberService.memberStatsEditor({ _id: result.memberId, targetKey: 'memberProperties', modifier: 1 });
+			await this.memberService.memberStatsEditor({
+				 _id: result.memberId, 
+				 targetKey: 'memberProperties', 
+				 modifier: 1 
+				});
 			return result;
 		} catch (err) {
 			// @ts-ignore
@@ -44,7 +45,6 @@ export class PropertyService {
 			throw new BadRequestException(Message.CREATE_FAILED);
 		}
 	}
-
 	/**=========================== getProperty =============================== **/
 	public async getProperty(memberId: ObjectId, propertyId: ObjectId): Promise<Property> {
 		const search: T = {
@@ -63,14 +63,16 @@ export class PropertyService {
 				targetProperty.propertyViews++;
 			}
 
-			// meLiced
+						// meLiced
 			const likeInput = { memberId: memberId, likeRefId: propertyId, likeGroup: LikeGroup.PROPERTY };
 			targetProperty.meLiked = await this.likeService.checkLikeExistence(likeInput);
+
 		}
 
 		targetProperty.memberData = await this.memberService.getMember(null, targetProperty.memberId);
 		return targetProperty;
 	}
+
 
 	/**=========================== updateProperty =============================== **/
 	public async updateProperty(memberId: ObjectId, input: PropertyUpdate): Promise<Property> {
@@ -93,7 +95,7 @@ export class PropertyService {
 		return result;
 	}
 
-	/**========================== getProperties =============================== **/
+/**=========================== getProperties =============================== **/
 	public async getProperties(memberId: ObjectId, input: PropertiesInquiry): Promise<Properties> {
 		const match: T = { propertyStatus: PropertyStatus.ACTIVE };
 		const sort: T = { [input?.sort ?? 'createdAt']: input?.direction ?? Direction.DESC };
@@ -110,8 +112,7 @@ export class PropertyService {
 						list: [
 							{ $skip: (input.page - 1) * input.limit },
 							{ $limit: input.limit },
-							//meLiked
-							lookupAuthMemberLiked(memberId),
+						     lookupAuthMemberLiked(memberId,),
 							lookupMember,
 							{ $unwind: '$memberData' },
 						],
@@ -141,10 +142,10 @@ export class PropertyService {
 		} = input.search;
 
 		if (memberId) match.memberId = shapeIntoMongoObjectId(memberId);
-		if (locationList) match.propertyLocation = { $in: locationList };
-		if (roomList) match.propertyRooms = { $in: roomList };
-		if (bedsList) match.propertyBeds = { $in: bedsList };
-		if (typeList) match.propertyType = { $in: typeList };
+		if (locationList && locationList.length ) match.propertyLocation = { $in: locationList };
+		if (roomList && roomList.length ) match.propertyRooms = { $in: roomList };
+		if (bedsList && bedsList.length ) match.propertyBeds = { $in: bedsList };
+		if (typeList && typeList.length ) match.propertyType = { $in: typeList };
 
 		if (pricesRange) match.propertyPrice = { $gte: pricesRange.start, $lte: pricesRange.end };
 		if (periodsRange) match.createdAt = { $gte: periodsRange.start, $lte: periodsRange.end };
@@ -159,17 +160,24 @@ export class PropertyService {
 			});
 	}
 
+    
 	/**=========================== getFavorites =============================== **/
 	public async getFavorites(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
 		return await this.likeService.getFavoriteProperties(memberId, input);
+
 	}
 
+    
+
 	/**=========================== getVisited =============================== **/
-	public async getVisited(memberId: ObjectId, input: OrdinaryInquiry): Promise<Properties> {
+	public async getVisited(memberId: Types.ObjectId, input: OrdinaryInquiry): Promise<Properties> {
 		return await this.viewService.getVisitedProperties(memberId, input);
 	}
 
-	/**=========================== getAgentProperties =============================== **/
+
+
+
+ /**=========================== getAgentProperties =============================== **/
 	public async getAgentProperties(memberId: ObjectId, input: AgentPropertiesInquiry): Promise<Properties> {
 		const { propertyStatus } = input.search;
 		if (propertyStatus === PropertyStatus.DELETE) throw new BadRequestException(Message.NOT_ALLOWED_REQUEST);
@@ -198,7 +206,8 @@ export class PropertyService {
 		return result[0];
 	}
 
-	/** --------------------------- LIKE --------------------------- **/
+
+	/** --------------------------- LIKE  PROPERTY -------------------------- **/
 	public async likeTargetProperty(memberId: ObjectId, likeRefId: ObjectId): Promise<Property> {
 		const target: Property = await this.propertyModel
 			.findOne({ _id: likeRefId, propertyStatus: PropertyStatus.ACTIVE })
@@ -293,10 +302,20 @@ export class PropertyService {
 			return result;
 		}
 	}
+	
 
 	/**=========================== propertyStatsEditor =============================== **/
+
 	public async propertyStatsEditor(input: StatisticModifier): Promise<Property> {
 		const { _id, targetKey, modifier } = input;
-		return await this.propertyModel.findByIdAndUpdate(_id, { $inc: { [targetKey]: modifier } }, { new: true }).exec();
+		return await this.propertyModel.findByIdAndUpdate(
+			_id,
+			 { $inc: { [targetKey]: modifier } },
+			  { 
+				new: true,
+			},
+		)
+		.exec();
 	}
+
 }

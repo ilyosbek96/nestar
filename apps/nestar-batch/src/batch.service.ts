@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Member } from 'apps/nestar-api/src/libs/dto/member/member';
-import { Property } from 'apps/nestar-api/src/libs/dto/property/property';
-import { MemberStatus, MemberType } from 'apps/nestar-api/src/libs/enums/member.enum';
-import { PropertyStatus } from 'apps/nestar-api/src/libs/enums/property.enum';
 import { Model } from 'mongoose';
+import { Property } from '../../nestar-api/src/libs/dto/property/property';
+import { Member } from '../../nestar-api/src/libs/dto/member/member';
+import { PropertyStatus } from '../../nestar-api/src/libs/enums/property.enum';
+import { MemberStatus, MemberType } from '../../nestar-api/src/libs/enums/member.enum';
 
 @Injectable()
 export class BatchService {
@@ -13,7 +13,7 @@ export class BatchService {
 		@InjectModel('Member') private readonly memberModel: Model<Member>,
 	) {}
 
-	/**------------------ batchRollback ----------------  */
+	 /** --------------------------- batchRollback --------------------------- **/
 	public async batchRollback(): Promise<void> {
 		await this.propertyModel
 			.updateMany(
@@ -24,7 +24,7 @@ export class BatchService {
 			)
 			.exec();
 
-		await this.memberModel
+		    await this.memberModel
 			.updateMany(
 				{
 					memberStatus: MemberStatus.ACTIVE,
@@ -35,7 +35,8 @@ export class BatchService {
 			.exec();
 	}
 
-	/**------------------ batchTopProperties ----------------  */
+	  /** --------------------------- batchTopProperties --------------------------- **/
+
 	public async batchTopProperties(): Promise<void> {
 		const properties: Property[] = await this.propertyModel
 			.find({
@@ -44,16 +45,17 @@ export class BatchService {
 			})
 			.exec();
 
-		const promisedList = properties.map(async (ele: Property) => {
-			const { _id, propertyLikes, propertyViews } = ele;
-			const rank = propertyLikes * 2 + propertyViews * 1;
-			return await this.propertyModel.findByIdAndUpdate(_id, { propertyRank: rank });
+		    const promisedList = properties.map(async (ele: Property) => {
+			const { _id, propertyLikes, propertyViews } = ele; //distraction
+			const rank = propertyLikes * 2 + propertyViews * 1; // property rank 25*2=50 30*1=30 ==80chiqadi
+			return await this.propertyModel.findByIdAndUpdate(_id, { propertyRank: rank });//osha renk chanche
 		});
 		await Promise.all(promisedList);
 	}
 
-	/**------------------ batchTopAgents ----------------  */
-	public async batchTopAgents(): Promise<void> {
+	   /** --------------------------- batchTopAgents --------------------------- **/
+
+	public async batchTopAgents(): Promise<void> { //agentlarni renkniki baholaymiz
 		const agents: Member[] = await this.memberModel
 			.find({
 				memberType: MemberType.AGENT,
@@ -64,14 +66,14 @@ export class BatchService {
 
 		const promisedList = agents.map(async (ele: Member) => {
 			const { _id, memberProperties, memberLikes, memberArticles, memberViews } = ele;
-			const rank = memberProperties * 5 + memberArticles * 3 + memberLikes * 2 + memberViews * 1;
+			const rank =
+				memberProperties * 5 + memberArticles * 3 + memberLikes * 2 + memberViews * 1;
 			return await this.memberModel.findByIdAndUpdate(_id, { memberRank: rank });
 		});
 		await Promise.all(promisedList);
 	}
 
-	/**------------------ getHello ----------------  */
 	public getHello(): string {
-		return 'Welcome to Nestar BATCH Server';
+		return 'Welcome to Nestar BATCH Server!';
 	}
 }

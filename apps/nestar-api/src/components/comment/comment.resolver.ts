@@ -13,11 +13,12 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { MemberType } from '../../libs/enums/member.enum';
 import { Roles } from '../auth/decorators/roles.decorator';
 
+
 @Resolver()
 export class CommentResolver {
 	constructor(private readonly commentService: CommentService) {}
 
-	/** --------------------------- createComment --------------------------- **/
+    /** --------------------------- createComment --------------------------- **/
 	@UseGuards(AuthGuard)
 	@Mutation(() => Comment)
 	public async createComment(
@@ -28,7 +29,7 @@ export class CommentResolver {
 		return await this.commentService.createComment(memberId, input);
 	}
 
-	/** --------------------------- updateComment --------------------------- **/
+    /** --------------------------- updateComment --------------------------- **/
 	@UseGuards(AuthGuard)
 	@Mutation(() => Comment)
 	public async updateComment(
@@ -39,8 +40,8 @@ export class CommentResolver {
 		input._id = shapeIntoMongoObjectId(input._id);
 		return await this.commentService.updateComment(memberId, input);
 	}
-
-	/** --------------------------- getComments --------------------------- **/
+    
+    /** --------------------------- getComments --------------------------- **/
 	@UseGuards(WithoutGuard)
 	@Query(() => Comments)
 	public async getComments(
@@ -52,12 +53,15 @@ export class CommentResolver {
 		return await this.commentService.getComments(memberId, input);
 	}
 
+
+
 	/** ADMIN */
-	/** --------------------------- removeCommentByAdmin --------------------------- **/
+    /** --------------------------- removeCommentByAdmin --------------------------- **/
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation(() => Comment)
-	public async removeCommentByAdmin(@Args('commentId') input: string): Promise<Comment> {
+	public async removeCommentByAdmin(
+		@Args('commentId') input: string): Promise<Comment> {
 		console.log('Mutation: removeCommentByAdmin');
 		const commentId = shapeIntoMongoObjectId(input);
 		return await this.commentService.removeCommentByAdmin(commentId);

@@ -11,7 +11,7 @@ import { FollowInquiry } from '../../libs/dto/follow/follow.input';
 
 @Resolver()
 export class FollowResolver {
-	constructor(private readonly followService: FollowService) {}
+    constructor(private readonly followService: FollowService) {}
 
 	/** +++++++++++++++++++++++++++++ subscribe +++++++++++++++++++++++ **/
 	@UseGuards(AuthGuard)
@@ -56,4 +56,5 @@ export class FollowResolver {
 		input.search.followingId = shapeIntoMongoObjectId(followingId);
 		return await this.followService.getMemberFollowers(memberId, input);
 	}
+
 }

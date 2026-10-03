@@ -1,28 +1,25 @@
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { PropertyService } from './property.service';
-import { Properties, Property } from '../../libs/dto/property/property';
-import {
-	AgentPropertiesInquiry,
-	AllPropertiesInquiry,
-	OrdinaryInquiry,
-	PropertiesInquiry,
-	PropertyInput,
-} from '../../libs/dto/property/property.input';
+
+
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
 import { UseGuards } from '@nestjs/common';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
-import { ObjectId } from 'mongoose';
+import { ObjectId, Types } from 'mongoose';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { AgentPropertiesInquiry, AllPropertiesInquiry, OrdinaryInquiry, PropertiesInquiry, PropertyInput } from '../../libs/dto/property/property.input';
+import { Properties, Property } from '../../libs/dto/property/property';
 import { PropertyUpdate } from '../../libs/dto/property/property.update';
 import { AuthGuard } from '../auth/guards/auth.guard';
 
 @Resolver()
 export class PropertyResolver {
 	constructor(private readonly propertyService: PropertyService) {}
-	/**=========================== createProperty ============================= **/
+
+ 	/**=========================== createProperty ============================= **/
 	@Roles(MemberType.AGENT)
 	@UseGuards(RolesGuard)
 	@Mutation(() => Property)
@@ -35,6 +32,7 @@ export class PropertyResolver {
 		return await this.propertyService.createProperty(input);
 	}
 
+
 	/**=========================== getProperty ============================= **/
 	@UseGuards(WithoutGuard)
 	@Query((returns) => Property)
@@ -46,6 +44,7 @@ export class PropertyResolver {
 		const propertyId = shapeIntoMongoObjectId(input);
 		return await this.propertyService.getProperty(memberId, propertyId);
 	}
+
 
 	/**=========================== updateProperty ============================= **/
 	@Roles(MemberType.AGENT)
@@ -60,6 +59,8 @@ export class PropertyResolver {
 		return await this.propertyService.updateProperty(memberId, input);
 	}
 
+
+
 	/**=========================== getProperties ============================= **/
 	@UseGuards(WithoutGuard)
 	@Query((returns) => Properties)
@@ -71,29 +72,7 @@ export class PropertyResolver {
 		return await this.propertyService.getProperties(memberId, input);
 	}
 
-	/**=========================== getFavorites ============================= **/
-	@UseGuards(AuthGuard)
-	@Query((returns) => Properties)
-	public async getFavorites(
-		@Args('input') input: OrdinaryInquiry,
-		@AuthMember('_id') memberId: ObjectId,
-	): Promise<Properties> {
-		console.log('Quer: getFavorites');
-		return await this.propertyService.getFavorites(memberId, input);
-	}
-
-	/**=========================== getVisited (tomosha qilingan) ============================= **/
-	@UseGuards(AuthGuard)
-	@Query((returns) => Properties)
-	public async getVisited(
-		@Args('input') input: OrdinaryInquiry,
-		@AuthMember('_id') memberId: ObjectId,
-	): Promise<Properties> {
-		console.log('Quer: getVisited');
-		return await this.propertyService.getVisited(memberId, input);
-	}
-
-	/**=========================== getAgentProperties ============================= **/
+	/**=========================== getProperties ===================== ======== **/
 	@Roles(MemberType.AGENT)
 	@UseGuards(RolesGuard)
 	@Query((returns) => Properties)
@@ -104,6 +83,36 @@ export class PropertyResolver {
 		console.log('Quer: getAgentProperties');
 		return await this.propertyService.getAgentProperties(memberId, input);
 	}
+
+
+	/**=========================== getFavorites ===================== ======== **/
+	@UseGuards(AuthGuard)
+	@Query((returns) => Properties)
+	public async getFavorites(
+		@Args('input') input: OrdinaryInquiry,
+		@AuthMember('_id') memberId: ObjectId,
+	): Promise<Properties> {
+		console.log('Quer: getFavorites');
+		return await this.propertyService.getFavorites(memberId, input);
+	}
+
+
+   /**=========================== getVisited ===================== ======== **/
+    @UseGuards(AuthGuard)
+	@Query((returns) => Properties) //biz tomosha qilgan propertylarni olish
+	public async getVisited(
+		@Args('input') input: OrdinaryInquiry,
+		@AuthMember('_id') memberId: Types.ObjectId,
+	): Promise<Properties> {
+		console.log('Query: getVisited');
+		return await this.propertyService.getVisited(memberId, input);
+	}
+
+
+
+
+
+
 
 	/** +++++++++++++++++++++++ LIKE +++++++++++++++++++ **/
 	@UseGuards(AuthGuard)
@@ -116,6 +125,7 @@ export class PropertyResolver {
 		const likeRefId = shapeIntoMongoObjectId(input);
 		return await this.propertyService.likeTargetProperty(memberId, likeRefId);
 	}
+
 
 	/** ++++++++++++++++++++++> ADMIN <++++++++++++++++++++++   **/
 	/**==== getAllPropertiesByAdmin ===== **/
@@ -140,6 +150,7 @@ export class PropertyResolver {
 		return await this.propertyService.updatePropertyByAdmin(input);
 	}
 
+
 	/**==== updatePropertyByAdmin ===== **/
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
@@ -149,4 +160,7 @@ export class PropertyResolver {
 		const properyId = shapeIntoMongoObjectId(input);
 		return await this.propertyService.removePropertyByAdmin(properyId);
 	}
+
+
+	
 }

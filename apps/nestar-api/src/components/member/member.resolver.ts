@@ -9,12 +9,13 @@ import { ObjectId } from 'mongoose';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
 import { RolesGuard } from '../auth/guards/roles.guard';
-import { MemberUpdate } from '../../libs/dto/member/memer.update';
+
 import { getSerialForImage, shapeIntoMongoObjectId, validMimeTypes } from '../../libs/config';
 import { WithoutGuard } from '../auth/guards/without.guard';
 import { GraphQLUpload, FileUpload } from 'graphql-upload';
 import { createWriteStream } from 'fs';
 import { Message } from '../../libs/enums/common.enum';
+import { MemberUpdate } from '../../libs/dto/member/member.update';
 
 @Resolver()
 export class MemberResolver {
@@ -120,9 +121,9 @@ export class MemberResolver {
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation(() => Member) // @Mutation(POST)
-	public async updateMemberByADmin(@Args('input') input: MemberUpdate): Promise<Member> {
-		console.log('updateMemberByADmin: updateMemberByADmin');
-		return await this.memberService.updateMemberByADmin(input);
+	public async updateMemberByAdmin(@Args('input') input: MemberUpdate): Promise<Member> {
+		console.log('updateMemberByAdmin: updateMemberByAdmin');
+		return await this.memberService.updateMemberByAdmin(input);
 	}
 
 	/** ******************************** UPLOAD ***************************** **/

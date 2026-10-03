@@ -1,48 +1,50 @@
-import { Args, Query, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { BoardArticleService } from './board-article.service';
-import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '../auth/guards/auth.guard';
 import { BoardArticle, BoardArticles } from '../../libs/dto/board-article/board-article';
 import {
-	AllBoardArticlesInquiry,
+    AllBoardArticlesInquiry,
 	BoardArticleInput,
 	BoardArticlesInquiry,
 } from '../../libs/dto/board-article/board-article.input';
 import { AuthMember } from '../auth/decorators/authMember.decorator';
 import { ObjectId } from 'mongoose';
-import { WithoutGuard } from '../auth/guards/without.guard';
+import { UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../auth/guards/auth.guard';
 import { shapeIntoMongoObjectId } from '../../libs/config';
+import { WithoutGuard } from '../auth/guards/without.guard';
 import { BoardArticleUpdate } from '../../libs/dto/board-article/board-article.update';
-import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { MemberType } from '../../libs/enums/member.enum';
-
+import { RolesGuard } from '../auth/guards/roles.guard';
 @Resolver()
 export class BoardArticleResolver {
 	constructor(private readonly boardArticleService: BoardArticleService) {}
+     
 
+    /** --------------------------- createBoardArticle --------------------------- **/
 	@UseGuards(AuthGuard)
-	@Mutation((returns) => BoardArticle)
+	@Mutation(() => BoardArticle)//new articleni dto orqali yuboradi
 	public async createBoardArticle(
 		@Args('input') input: BoardArticleInput,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<BoardArticle> {
-		console.log('Mutation: BoardArticleInput');
+		console.log('Mutation: createBoardArticle');
 		return await this.boardArticleService.createBoardArticle(memberId, input);
 	}
-	@UseGuards(WithoutGuard)
-	@Query(() => BoardArticle)
+    
+    /** --------------------------- getBoardArticle --------------------------- **/
+	@UseGuards(WithoutGuard)//auth guard bolmagan userlar ham kirishi mumkin
+	@Query(() => BoardArticle)//dto orqali bitta articleni qaytaradi
 	public async getBoardArticle(
-		@Args('articleId') input: string,
+		@Args('articleId') input: string,//mdb articleId ni string qilib qabul qiladi
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<BoardArticle> {
 		console.log('Query: getBoardArticle');
-
 		const articleId = shapeIntoMongoObjectId(input);
-
 		return await this.boardArticleService.getBoardArticle(memberId, articleId);
 	}
-
+    
+     /** --------------------------- updateBoardArticle --------------------------- **/
 	@UseGuards(AuthGuard)
 	@Mutation(() => BoardArticle)
 	public async updateBoardArticle(
@@ -50,76 +52,72 @@ export class BoardArticleResolver {
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<BoardArticle> {
 		console.log('Mutation: updateBoardArticle');
-
 		input._id = shapeIntoMongoObjectId(input._id);
-
 		return await this.boardArticleService.updateBoardArticle(memberId, input);
 	}
+    
 
-	@UseGuards(WithoutGuard)
-	@Query(() => BoardArticles)
+    /** --------------------------- getBoardArticles --------------------------- **/
+	@UseGuards(WithoutGuard)//auth guard bolmagan userlar ham kirishi mumkin
+	@Query(() => BoardArticles)//
 	public async getBoardArticles(
 		@Args('input') input: BoardArticlesInquiry,
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<BoardArticles> {
 		console.log('Query: getBoardArticles');
-
 		return await this.boardArticleService.getBoardArticles(memberId, input);
 	}
 
-	// Like
+	/** +++++++++++++++++++++++ LIKE +++++++++++++++++++ **/
 	@UseGuards(AuthGuard)
 	@Mutation(() => BoardArticle)
 	public async likeTargetBoardArticle(
-		// target
 		@Args('articleId') input: string,
-		// like bosuvchi
 		@AuthMember('_id') memberId: ObjectId,
 	): Promise<BoardArticle> {
-		console.log('Mutation: likeTargetBoardArticle');
+		console.log('Mutation: likeTargetBoardArticle ');
 		const likeRefId = shapeIntoMongoObjectId(input);
-
 		return await this.boardArticleService.likeTargetBoardArticle(memberId, likeRefId);
 	}
 
-	/* ADMIN */
+    /** ADMIN */
+
+	/** ADMIN **/
+    
+
+    /** --------------------------- getAllBoardArticlesByAdmin --------------------------- **/
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Query(() => BoardArticles)
 	public async getAllBoardArticlesByAdmin(
 		@Args('input') input: AllBoardArticlesInquiry,
-		@AuthMember('_id') memberId: ObjectId,
 	): Promise<BoardArticles> {
 		console.log('Query: getAllBoardArticlesByAdmin');
-
 		return await this.boardArticleService.getAllBoardArticlesByAdmin(input);
 	}
-
+    
+    /** --------------------------- updateBoardArticleByAdmin --------------------------- **/
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation(() => BoardArticle)
 	public async updateBoardArticleByAdmin(
 		@Args('input') input: BoardArticleUpdate,
-		@AuthMember('_id') memberId: ObjectId,
 	): Promise<BoardArticle> {
 		console.log('Mutation: updateBoardArticleByAdmin');
-
 		input._id = shapeIntoMongoObjectId(input._id);
-
 		return await this.boardArticleService.updateBoardArticleByAdmin(input);
 	}
-
+    
+    /** --------------------------- removeBoardArticleByAdmin --------------------------- **/
 	@Roles(MemberType.ADMIN)
 	@UseGuards(RolesGuard)
 	@Mutation(() => BoardArticle)
 	public async removeBoardArticleByAdmin(
 		@Args('articleId') input: string,
-		@AuthMember('_id') memberId: ObjectId,
 	): Promise<BoardArticle> {
 		console.log('Mutation: removeBoardArticleByAdmin');
-
 		const articleId = shapeIntoMongoObjectId(input);
-
 		return await this.boardArticleService.removeBoardArticleByAdmin(articleId);
 	}
+
 }

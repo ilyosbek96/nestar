@@ -6,11 +6,11 @@ import { ObjectId } from 'mongoose';
 class FollowSearch {
 	@IsOptional()
 	@Field(() => String, { nullable: true })
-	followingId?: ObjectId;
+	followingId?: ObjectId; // (kimni kuzatishi bo'yicha)
 
 	@IsOptional()
 	@Field(() => String, { nullable: true })
-	followerId?: ObjectId;
+	followerId?: ObjectId; // (kim kuzatayotganini aniqlash uchun)
 }
 
 @InputType()
@@ -18,12 +18,12 @@ export class FollowInquiry {
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
-	page: number;
+	page: number; // sahifa raqami, pagination uchun
 
 	@IsNotEmpty()
 	@Min(1)
 	@Field(() => Int)
-	limit: number;
+	limit: number; // (har bir sahifada nechta element ko'rsatilishini belgilaydi)
 
 	@IsNotEmpty()
 	@Field(() => FollowSearch)

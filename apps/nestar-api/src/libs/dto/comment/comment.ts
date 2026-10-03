@@ -3,7 +3,7 @@ import { ObjectId } from 'mongoose';
 import { CommentGroup, CommentStatus } from '../../enums/comment.enum';
 import { Member, TotalCounter } from '../member/member';
 
-@ObjectType()
+@ObjectType()//backendan frontentga rquest yuboradi
 export class Comment {
 	@Field(() => String)
 	_id: ObjectId;
