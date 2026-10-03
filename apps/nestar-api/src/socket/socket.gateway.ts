@@ -41,6 +41,7 @@ export class SocketGateway implements OnGatewayInit {
 		try {
 			const parseUrl = url.parse(req.url, true);
 			const { token } = parseUrl.query;
+
 			return await this.authService.verifyToken(token as string);
 		} catch (err) {
 			//this.logger.warn(`Auth failed: ${(err as Error).message}`);
@@ -125,7 +126,7 @@ export class SocketGateway implements OnGatewayInit {
 
 /*
 MESSAGE TARGET:
-1. Client (only client)
-2. Broadcast (except client)
-3. Emit (all clients)
+1. Client (only client. [klentningn oziga])
+2. Broadcast (except client [osha klentdan boshqa xammaga])
+3. Emit (all clients [xamma klent])
 */
