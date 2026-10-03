@@ -87,7 +87,7 @@ export class SocketGateway implements OnGatewayInit {
 
 	//SUBSCRIBE MESSAGE
 	@SubscribeMessage('message')
-	public async handleMessage(client: WebSocket, payload: string): Promise<void> {
+	public handleMessage(client: WebSocket, payload: string): void {
 		const authMember = this.clientsAuthMap.get(client) ?? null;
 		const newMessage: MessagePayload = {
 			event: 'message',
